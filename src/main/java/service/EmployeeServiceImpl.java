@@ -4,34 +4,30 @@ import exception.exception.EmployeeAlreadyAddedException;
 import exception.exception.EmployeeNotFoundException;
 import model.Employee;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 public class EmployeeServiceImpl implements EmployeeService {
-    private final List<Employee> employeeList;
+    private final Map<String,Employee> employees;
 
-    public EmployeeServiceImpl() {
-
-        this.employeeList = new ArrayList<>();
+    public EmployeeServiceImpl() {this.employees = new HashMap<>();
     }
 
 
     @Override
     public Employee add(String firsName, String lastName) {
         Employee employee = new Employee(firsName, lastName);
-        if (employeeList.contains(employee)){
+        if (employees.containsKey(employee.getFullName())){
            throw new EmployeeAlreadyAddedException();
         }
-        employeeList.add(employee);
+        employees.put(employee.getFullName(), employee);
         return employee;
     }
 
     @Override
     public Employee remove(String firsName, String lastName) {
         Employee employee = new Employee(firsName, lastName);
-        if (employeeList.contains(employee)) {
-            employeeList.remove(employee);
+        if (employees.containsKey(employee.getFullName())) {
+            employees.remove(employee.getFullName());
             return employee;
         }
         throw new EmployeeNotFoundException();
@@ -40,10 +36,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee find(String firsName, String lastName) {
         Employee employee = new Employee(firsName, lastName);
-        if (employeeList.contains(employee)) {
+        if (employees.containsKey(employee.getFullName())) {
 
-            return employee;
+            return employees.get(employee.getFullName());
         }
         throw new EmployeeNotFoundException();
     }
 
+    @Override
+    public Collection<Employee> findAll() {
+        return Collections.unmodifiableCollection(employees.values());
+    }
+}
